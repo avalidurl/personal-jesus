@@ -4,22 +4,18 @@
  * Static TempleOS desktop served from Workers Assets through a hardening shim,
  * plus POST /join → D1 waitlist. Posture mirrors llmcraft-site:
  *   - Assets: GET/HEAD only.
- *   - Strict CSP (Turnstile holes for challenges.cloudflare.com).
- *   - Join: same-origin, honeypot, email check, optional Turnstile, D1 insert.
+ *   - Strict CSP, same-origin scripts/styles only.
+ *   - Join: same-origin, honeypot, email check, D1 insert.
  *   - Fails closed: unexpected error → generic 500, no internals leaked.
  *
  * Bindings: ASSETS, DB.
- * Optional secret: TURNSTILE_SECRET (enforced only when set).
  */
 
 import { honeypotFilled, isEmail, normalizeEmail } from "./validate.js";
 
 const CSP =
   "default-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; " +
-  "img-src 'self' data:; style-src 'self'; " +
-  "script-src 'self' https://challenges.cloudflare.com; " +
-  "frame-src https://challenges.cloudflare.com; " +
-  "connect-src 'self' https://challenges.cloudflare.com; " +
+  "img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; " +
   "font-src 'self'; object-src 'none'; upgrade-insecure-requests";
 
 const SECURITY_HEADERS = {
@@ -72,26 +68,7 @@ async function readBody(request) {
   }
 }
 
-async function verifyTurnstile(env, token, ip) {
-  if (!env.TURNSTILE_SECRET) return true;
-  if (!token) return false;
-  try {
-    const form = new FormData();
-    form.append("secret", env.TURNSTILE_SECRET);
-    form.append("response", token);
-    if (ip) form.append("remoteip", ip);
-    const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      body: form,
-    });
-    const out = await r.json();
-    return !!out.success;
-  } catch {
-    return false;
-  }
-}
-
-async function handleJoin(request, env, ip) {
+async function handleJoin(request, env) {
   if (!sameOrigin(request)) return json({ error: "bad origin" }, 403);
   const body = await readBody(request);
   if (!body) return json({ error: "bad request" }, 400);
@@ -100,9 +77,6 @@ async function handleJoin(request, env, ip) {
 
   const email = normalizeEmail(body.email);
   if (!isEmail(email)) return json({ error: "valid email required" }, 400);
-
-  const okTurnstile = await verifyTurnstile(env, body.turnstile, ip);
-  if (!okTurnstile) return json({ error: "verification failed" }, 403);
 
   if (!env.DB) return json({ error: "unavailable" }, 500);
 
@@ -121,7 +95,6 @@ export default {
     try {
       const url = new URL(request.url);
       const path = url.pathname;
-      const ip = request.headers.get("cf-connecting-ip") || "0.0.0.0";
 
       if (path === "/join") {
         if (request.method !== "POST") {
@@ -130,7 +103,7 @@ export default {
             headers: { allow: "POST", ...SECURITY_HEADERS },
           });
         }
-        return handleJoin(request, env, ip);
+        return handleJoin(request, env);
       }
 
       if (request.method !== "GET" && request.method !== "HEAD") {

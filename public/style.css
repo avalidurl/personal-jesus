@@ -239,8 +239,6 @@ button.close:hover, button.close:focus-visible {
   opacity: 0;
 }
 
-.cf-turnstile { margin: 8px 0; max-width: 100%; }
-
 .btn {
   display: inline-block;
   min-height: 44px;

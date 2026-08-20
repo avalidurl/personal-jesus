@@ -24,12 +24,6 @@ npx wrangler d1 migrations apply personal-jesus-waitlist --remote
 npx wrangler deploy
 ```
 
-Turnstile is enforced only when `TURNSTILE_SECRET` is set:
-
-```bash
-npx wrangler secret put TURNSTILE_SECRET
-```
-
 ## Font
 
 `public/fonts/WebPlus_IBM_VGA_8x16.woff` is from VileR’s [Ultimate Oldschool PC Font Pack](https://int10h.org/oldschool-pc-fonts/) (CC BY-SA 4.0). License text is next to the file.

@@ -86,7 +86,7 @@ Form status (in-OS, not browser alerts):
 |---|---|
 | Success, new row | `ACCEPTED.` |
 | Success, email already stored | `ALREADY ON FILE.` |
-| Validation / Turnstile / server error | `REJECTED.` |
+| Validation / server error | `REJECTED.` |
 
 Do not put the raw API error string on screen.
 
@@ -97,7 +97,7 @@ Same shape as `llmcraft.numetal.xyz` / `llmlivesmatter.numetal.xyz`: Cloudflare 
 ```
 browser
   GET  /          → Worker hardening shim → ASSETS (HTML/CSS/JS/font)
-  POST /join      → Worker: origin + honeypot + email + Turnstile → D1
+  POST /join      → Worker: origin + honeypot + email → D1
 ```
 
 | Piece | Choice |
@@ -152,7 +152,7 @@ npx wrangler d1 execute personal-jesus-waitlist --remote --command \
 JSON body, max 4 KiB:
 
 ```json
-{ "email": "you@x.com", "turnstile": "<token or omitted>", "offering": "" }
+{ "email": "you@x.com", "offering": "" }
 ```
 
 `offering` is a hidden honeypot. If non-empty, return `{ "ok": true }` and insert nothing.
@@ -164,11 +164,10 @@ JSON body, max 4 KiB:
 3. Parse JSON. Else 400.
 4. Honeypot.
 5. `email` trim + lowercase. Must match `^[^\s@]+@[^\s@]+\.[^\s@]+$` and length ≤ 254. Else 400.
-6. Turnstile: if `TURNSTILE_SECRET` is set, siteverify must succeed (fail closed). Else 403. If the secret is unset (local `wrangler dev`), skip. Production launch requires the secret.
-7. `INSERT` into D1.
+6. `INSERT` into D1.
    - New row → 200 `{ "ok": true }`
    - Unique conflict → 200 `{ "ok": true, "already": true }`
-8. Unexpected failure → 500 `{ "error": "unavailable" }` with no internals.
+7. Unexpected failure → 500 `{ "error": "unavailable" }` with no internals.
 
 Frontend maps 200/`ok` to `ACCEPTED.`, 200/`already` to `ALREADY ON FILE.`, anything else to `REJECTED.`
 
@@ -179,20 +178,15 @@ No `GET` count endpoint. No CORS for other origins.
 - Same-origin on POST.
 - Honeypot `offering`.
 - Unique email.
-- Cloudflare Turnstile, verified **in this Worker** (same pattern as `llmcraft-site`). Invisible / interaction-only so the widget does not smash the 16-color UI.
-- Reuse studio widget sitekey `0x4AAAAAAEG8CWZN8yq8G3kt` if `jesus.numetal.xyz` is already on its domain list; otherwise add the hostname (and `localhost` for dev). Secret: `npx wrangler secret put TURNSTILE_SECRET`. Never write the secret to disk.
 - No extra KV rate-limit table in v1.
 
 ### Security headers
 
-Mirror `llmcraft-site`, with Turnstile holes:
+Mirror `llmcraft-site`:
 
 ```
 default-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self';
-img-src 'self' data:; style-src 'self';
-script-src 'self' https://challenges.cloudflare.com;
-frame-src https://challenges.cloudflare.com;
-connect-src 'self' https://challenges.cloudflare.com;
+img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self';
 font-src 'self'; object-src 'none'; upgrade-insecure-requests
 ```
 
@@ -207,7 +201,7 @@ Assets are GET/HEAD only. `/join` is the only POST.
 | New signup | 200 `{ok:true}` | `ACCEPTED.` |
 | Duplicate email | 200 `{ok:true, already:true}` | `ALREADY ON FILE.` |
 | Bad email / bad JSON | 400 | `REJECTED.` |
-| Bad origin / failed Turnstile | 403 | `REJECTED.` |
+| Bad origin | 403 | `REJECTED.` |
 | Honeypot | 200 `{ok:true}` | `ACCEPTED.` (bot is discarded) |
 | D1 down / throw | 500 | `REJECTED.` |
 | Missing asset | 404 page in TempleOS chrome | `File not found.` |
@@ -236,5 +230,4 @@ Network failure in the browser also shows `REJECTED.` Double-submit is disabled 
 1. Spec approved.
 2. Page + `/join` + D1 work on `wrangler dev`.
 3. Tests above pass.
-4. `TURNSTILE_SECRET` set on the Worker before the hostname is public.
-5. Founder says to deploy `jesus.numetal.xyz`.
+4. Founder says to deploy `jesus.numetal.xyz`.

@@ -1,15 +1,5 @@
 "use strict";
 
-function turnstileToken() {
-  var field = document.querySelector("[name=cf-turnstile-response]");
-  if (field && field.value) return field.value;
-  if (window.turnstile && typeof window.turnstile.getResponse === "function") {
-    try { return window.turnstile.getResponse() || ""; }
-    catch (_) { return ""; }
-  }
-  return "";
-}
-
 function setStatus(el, text, kind) {
   el.textContent = text;
   el.className = "status" + (kind ? " is-" + kind : "");
@@ -66,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         email: value,
-        turnstile: turnstileToken(),
         offering: form.elements.offering ? form.elements.offering.value : "",
       }),
     })

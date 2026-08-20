@@ -19,8 +19,35 @@ document.addEventListener("DOMContentLoaded", function () {
   var form = document.getElementById("join");
   var email = document.getElementById("email");
   var status = document.getElementById("status");
-  var btn = form.querySelector("button[type=submit]");
-  if (!form || !email || !status) return;
+  var signup = document.getElementById("signup");
+  var closeBtn = document.getElementById("close-signup");
+  var openMenu = document.getElementById("menu-signup");
+  var openIcon = document.getElementById("icon-signup");
+  var btn = form && form.querySelector("button[type=submit]");
+  if (!form || !email || !status || !signup) return;
+
+  function setSignupOpen(open) {
+    signup.hidden = !open;
+    if (openIcon) openIcon.hidden = open;
+    if (open) {
+      email.focus();
+    } else if (openIcon) {
+      openIcon.focus();
+    }
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () { setSignupOpen(false); });
+  }
+  if (openMenu) {
+    openMenu.addEventListener("click", function () { setSignupOpen(true); });
+  }
+  if (openIcon) {
+    openIcon.addEventListener("click", function () { setSignupOpen(true); });
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !signup.hidden) setSignupOpen(false);
+  });
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();

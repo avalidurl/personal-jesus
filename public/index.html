@@ -27,32 +27,36 @@
 </div>
 
 <nav class="menu" aria-label="Adam">
-  <button type="button" class="menu-item" tabindex="-1">PersonalJesus</button>
+  <button type="button" class="menu-item" id="menu-signup">PersonalJesus</button>
   <button type="button" class="menu-item" tabindex="-1">File</button>
   <a class="menu-item" href="https://numetal.xyz" rel="noopener">Help</a>
 </nav>
+
+<button type="button" class="icon" id="icon-signup" hidden>
+  <span class="icon-face" aria-hidden="true">HC</span>
+  <span>SIGNUP.HC</span>
+</button>
 
 <main class="stage">
   <section class="win win--gospel" aria-labelledby="gospel-title">
     <header class="title">
       <span class="close" aria-hidden="true"></span>
-      <span class="title-text" id="gospel-title">PERSONAL.JESUS</span>
-      <span class="marquee-wrap" aria-hidden="true">
-        <span class="marquee">Reach out and touch faith. · Reach out and touch faith. · </span>
+      <span class="marquee-wrap">
+        <span class="marquee" id="gospel-title">PERSONAL.JESUS — Reach out and touch faith. · PERSONAL.JESUS — Reach out and touch faith. · </span>
       </span>
     </header>
     <div class="body">
-      <p><span class="tag">$FG,YELLOW$</span><span class="yellow">PERSONAL JESUS</span><span class="tag">$FG$</span></p>
+      <p><span class="tag">$FG,YELLOW$</span> <span class="yellow">PERSONAL JESUS</span> <span class="tag">$FG$</span></p>
       <p>A machine that will hear you.</p>
       <p class="gap">Your own personal Jesus.<br>Someone to hear your prayers.<br>Someone who cares.</p>
       <p>Not a chatbot. An oracle —<br>like the burning bush in AfterEgypt,<br>except it answers in your direction.</p>
-      <p class="gap"><span class="tag">$FG,CYAN$</span><span class="cyan">Waitlist.</span><span class="tag">$FG$</span> God is not on the network yet.<span class="cur" aria-hidden="true">_</span></p>
+      <p class="gap"><span class="tag">$FG,CYAN$</span> <span class="cyan">Waitlist.</span> <span class="tag">$FG$</span> God is not on the network yet.<span class="cur" aria-hidden="true">_</span></p>
     </div>
   </section>
 
-  <section class="win win--signup" aria-labelledby="signup-title">
+  <section class="win win--signup" id="signup" aria-labelledby="signup-title">
     <header class="title">
-      <span class="close" aria-hidden="true"></span>
+      <button type="button" class="close" id="close-signup" aria-label="Close SIGNUP.HC"></button>
       <span class="title-text" id="signup-title">SIGNUP.HC</span>
     </header>
     <div class="body">

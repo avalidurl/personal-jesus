@@ -12,14 +12,14 @@ var PAL = [
 
 var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var TILE = 32;
-var ROWS = 40;
+var CELL = 4;
 
 function Host(cv) {
   this.cv = cv;
   this.ctx = cv.getContext("2d");
   this.cols = 0;
-  this.rows = ROWS;
-  this.cell = 4;
+  this.rows = 40;
+  this.cell = CELL;
   this.px = null;
   this.f = 0;
   this.last = 0;
@@ -28,15 +28,17 @@ function Host(cv) {
 Host.prototype.resize = function () {
   var cssW = this.cv.clientWidth || this.cv.parentElement.clientWidth || 640;
   var cssH = this.cv.clientHeight || 160;
-  var cell = Math.max(3, Math.floor(cssH / ROWS));
-  var cols = Math.max(TILE, Math.floor(cssW / cell));
+  var cell = CELL;
+  var cols = Math.max(TILE * 6, Math.floor(cssW / cell));
+  var rows = Math.max(36, Math.floor(cssH / cell));
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
   this.cell = cell;
   this.cols = cols;
+  this.rows = rows;
   this.cv.width = Math.round(cols * cell * dpr);
-  this.cv.height = Math.round(ROWS * cell * dpr);
+  this.cv.height = Math.round(rows * cell * dpr);
   this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  this.px = new Uint8Array(cols * ROWS);
+  this.px = new Uint8Array(cols * rows);
 };
 
 Host.prototype.clear = function () {
@@ -44,7 +46,7 @@ Host.prototype.clear = function () {
 };
 
 Host.prototype.set = function (x, y, c) {
-  if (x < 0 || y < 0 || x >= this.cols || y >= ROWS) return;
+  if (x < 0 || y < 0 || x >= this.cols || y >= this.rows) return;
   this.px[y * this.cols + x] = c & 15;
 };
 
@@ -67,7 +69,7 @@ Host.prototype.blit = function () {
   var cols = this.cols;
   var px = this.px;
   ctx.fillStyle = PAL[1];
-  ctx.fillRect(0, 0, cols * cell, ROWS * cell);
+  ctx.fillRect(0, 0, cols * cell, this.rows * cell);
   var last = -1;
   for (var i = 0; i < px.length; i++) {
     var c = px[i];
@@ -221,10 +223,11 @@ function throne(h, ox, oy, f) {
 
 function stars(h, f) {
   var x, y, r;
-  for (y = 0; y < 10; y++) {
+  var yMax = Math.max(12, h.rows - 30);
+  for (y = 0; y < yMax; y++) {
     for (x = 0; x < h.cols; x++) {
       r = hash(x, y, 9);
-      if (r > 0.045) continue;
+      if (r > 0.04) continue;
       var on = ((f + (x * 3)) % 8) > (r * 8);
       h.set(x, y, on ? 15 : 8);
     }
@@ -233,13 +236,14 @@ function stars(h, f) {
 
 function firebar(h, f) {
   var x, r, c;
+  var base = h.rows;
   for (x = 0; x < h.cols; x++) {
     r = hash(x, (f / 2) | 0, 17);
     c = r < 0.2 ? 15 : (r < 0.45 ? 14 : (r < 0.75 ? 12 : 4));
-    h.set(x, ROWS - 1, c);
-    if (r < 0.55) h.set(x, ROWS - 2, r < 0.25 ? 14 : 12);
-    if (r < 0.22) h.set(x, ROWS - 3, 14);
-    if (hash(x, f, 21) < 0.08) h.set(x, ROWS - 4, 15);
+    h.set(x, base - 1, c);
+    if (r < 0.55) h.set(x, base - 2, r < 0.25 ? 14 : 12);
+    if (r < 0.22) h.set(x, base - 3, 14);
+    if (hash(x, f, 21) < 0.08) h.set(x, base - 4, 15);
   }
 }
 
@@ -256,7 +260,7 @@ Host.prototype.draw = function (f) {
   for (x = start; x < end; x += TILE) {
     i = Math.floor((x + shift) / TILE);
     fn = SPRITES[((i % n) + n) % n];
-    fn(this, x - (shift % TILE), 2, f + i * 7);
+    fn(this, x - (shift % TILE), Math.max(2, ((this.rows - 32) / 2) | 0), f + i * 7);
   }
   firebar(this, f);
   this.blit();

@@ -5,9 +5,13 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs host/*.test.mjs",
+    "host:generate": "node host/generate.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.124.0"
+  },
+  "dependencies": {
+    "gifenc": "^1.0.3"
   }
 }

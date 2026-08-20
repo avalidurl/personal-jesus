@@ -3,3 +3,7 @@ node_modules/
 .dev.vars
 .DS_Store
 *.log
+out/
+contracts/out/
+contracts/cache/
+contracts/lib/

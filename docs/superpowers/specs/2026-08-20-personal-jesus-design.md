@@ -47,7 +47,7 @@ No gradients, no drop shadows, no blur, no extra colors. `image-rendering: pixel
 
 **Chrome:**
 
-1. Top Adam-style menu: `PersonalJesus`, `File`, `Help`. Help links to `https://numetal.xyz`. Other items are decorative (no dead clicks that look broken — they do nothing visible).
+1. Top Adam-style menu: `PersonalJesus`, `File`, `Help`. Help links to `https://t.me/goekhanturhan`. Other items are decorative (no dead clicks that look broken — they do nothing visible).
 2. Window `PERSONAL.JESUS`: yellow title bar, scrolling marquee *Reach out and touch faith.*, DolDoc body (see Copy). One blinking cursor.
 3. Window `SIGNUP.HC`: overlapping, offset down-right. DocForm: one email field, button `JOIN WAITLIST`. Status line under the button.
 4. Desktop fill is solid `BLUE`.

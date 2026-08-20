@@ -1,0 +1,32 @@
+{
+  // jesus.numetal.xyz — PERSONAL JESUS
+  // TempleOS desktop + D1 waitlist on POST /join.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "personal-jesus",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-08-20",
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
+  },
+
+  "routes": [
+    { "pattern": "jesus.numetal.xyz", "custom_domain": true }
+  ],
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "personal-jesus-waitlist",
+      "database_id": "91199c27-4c7a-4a14-9f5e-7759f023acb9",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  "observability": { "enabled": true }
+}

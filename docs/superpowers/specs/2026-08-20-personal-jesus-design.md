@@ -152,7 +152,7 @@ npx wrangler d1 execute personal-jesus-waitlist --remote --command \
 JSON body, max 4 KiB:
 
 ```json
-{ "email": "you@x.com", "offering": "" }
+{ "email": "contact@gokhan.vc", "offering": "" }
 ```
 
 `offering` is a hidden honeypot. If non-empty, return `{ "ok": true }` and insert nothing.

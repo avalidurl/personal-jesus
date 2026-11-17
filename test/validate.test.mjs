@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import { isEmail, normalizeEmail, honeypotFilled } from "../src/validate.js";
 
 test("normalizeEmail trims and lowercases", () => {
-  assert.equal(normalizeEmail("  You@X.COM "), "you@x.com");
+  assert.equal(normalizeEmail("  contact@gokhan.vc "), "contact@gokhan.vc");
 });
 
 test("isEmail accepts a normal address", () => {
-  assert.equal(isEmail("you@x.com"), true);
+  assert.equal(isEmail("contact@gokhan.vc"), true);
 });
 
 test("isEmail rejects empty, spaces, and oversize", () => {

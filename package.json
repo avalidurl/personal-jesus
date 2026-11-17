@@ -9,7 +9,7 @@
     "host:generate": "node host/generate.mjs"
   },
   "devDependencies": {
-    "wrangler": "^4.124.0"
+    "wrangler": "^4.164.0"
   },
   "dependencies": {
     "gifenc": "^1.0.3"
